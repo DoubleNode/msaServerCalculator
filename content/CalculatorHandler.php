@@ -4,7 +4,7 @@ namespace tutorial\php;
 
 error_reporting(E_ALL);
 
-require_once __DIR__.'/../../lib/php/lib/Thrift/ClassLoader/ThriftClassLoader.php';
+require_once __DIR__.'/msaCommon/php/lib/Thrift/ClassLoader/ThriftClassLoader.php';
 
 use Thrift\ClassLoader\ThriftClassLoader;
 
@@ -51,7 +51,7 @@ use Thrift\Protocol\TBinaryProtocol;
 use Thrift\Transport\TPhpStream;
 use Thrift\Transport\TBufferedTransport;
 
-class CalculatorHandler implements \tutorial\CalculatorIf {
+class CalculatorHandler implements \msaCalculator\gen-php\msaCalculator\CalculatorIf {
   protected $log = array();
 
   public function ping() {
