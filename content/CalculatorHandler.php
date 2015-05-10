@@ -1,6 +1,6 @@
 <?php
 
-namespace tutorial\php;
+namespace msaCalculator;
 
 error_reporting(E_ALL);
 
@@ -8,12 +8,12 @@ require_once __DIR__.'/msaCommon/php/lib/Thrift/ClassLoader/ThriftClassLoader.ph
 
 use Thrift\ClassLoader\ThriftClassLoader;
 
-$GEN_DIR = realpath(dirname(__FILE__).'/..').'/gen-php';
-
+$GEN_DIR = realpath(dirname(__FILE__).'/.').'/msaCalculator/gen-php';
+//
 $loader = new ThriftClassLoader();
-$loader->registerNamespace('Thrift', __DIR__ . '/../../lib/php/lib');
-$loader->registerDefinition('shared', $GEN_DIR);
-$loader->registerDefinition('tutorial', $GEN_DIR);
+$loader->registerNamespace('Thrift', __DIR__ . '/msaCommon/php/lib');
+$loader->registerDefinition('shared', $GEN_DIR);       // ' . '/shared');
+$loader->registerDefinition('msaCalculator', $GEN_DIR); // ' . '/msaCalculator');
 $loader->register();
 
 /*
@@ -44,14 +44,14 @@ $loader->register();
  */
 
 if (php_sapi_name() == 'cli') {
-  ini_set("display_errors", "stderr");
+    ini_set("display_errors", "stderr");
 }
 
 use Thrift\Protocol\TBinaryProtocol;
 use Thrift\Transport\TPhpStream;
 use Thrift\Transport\TBufferedTransport;
 
-class CalculatorHandler implements \msaCalculator\gen-php\msaCalculator\CalculatorIf {
+class CalculatorHandler implements \msaCalculator\CalculatorIf {
   protected $log = array();
 
   public function ping() {
@@ -63,21 +63,21 @@ class CalculatorHandler implements \msaCalculator\gen-php\msaCalculator\Calculat
     return $num1 + $num2;
   }
 
-  public function calculate($logid, \tutorial\Work $w) {
+  public function calculate($logid, \msaCalculator\Work $w) {
     error_log("calculate({$logid}, {{$w->op}, {$w->num1}, {$w->num2}})");
     switch ($w->op) {
-      case \tutorial\Operation::ADD:
+      case \msaCalculator\Operation::ADD:
         $val = $w->num1 + $w->num2;
         break;
-      case \tutorial\Operation::SUBTRACT:
+      case \msaCalculator\Operation::SUBTRACT:
         $val = $w->num1 - $w->num2;
         break;
-      case \tutorial\Operation::MULTIPLY:
+      case \msaCalculator\Operation::MULTIPLY:
         $val = $w->num1 * $w->num2;
         break;
-      case \tutorial\Operation::DIVIDE:
+      case \msaCalculator\Operation::DIVIDE:
         if ($w->num2 == 0) {
-          $io = new \tutorial\InvalidOperation();
+          $io = new \msaCalculator\InvalidOperation();
           $io->what = $w->op;
           $io->why = "Cannot divide by 0";
           throw $io;
@@ -85,7 +85,7 @@ class CalculatorHandler implements \msaCalculator\gen-php\msaCalculator\Calculat
         $val = $w->num1 / $w->num2;
         break;
       default:
-        $io = new \tutorial\InvalidOperation();
+        $io = new \msaCalculator\InvalidOperation();
         $io->what = $w->op;
         $io->why = "Invalid Operation";
         throw $io;
@@ -119,7 +119,7 @@ if (php_sapi_name() == 'cli') {
 }
 
 $handler = new CalculatorHandler();
-$processor = new \tutorial\CalculatorProcessor($handler);
+$processor = new \msaCalculator\CalculatorProcessor($handler);
 
 $transport = new TBufferedTransport(new TPhpStream(TPhpStream::MODE_R | TPhpStream::MODE_W));
 $protocol = new TBinaryProtocol($transport, true, true);
